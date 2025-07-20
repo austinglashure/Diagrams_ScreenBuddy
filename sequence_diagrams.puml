@@ -1,0 +1,89 @@
+@startuml Account Actions Sequence Diagram
+
+Actor User
+Participant Client
+Database MongoDB
+Participant Sendgrid
+
+
+User -> Client: Navigates to Sign Up Screen
+
+loop Until Valid Username
+
+    User -> Client: Inputs Signup Information
+    Client -> MongoDB: Username Check
+
+    alt Username is Valid
+        MongoDB -> Client: Valid Username Response
+
+    else Username is Invalid
+        MongoDB -> Client: Invalid Username Response
+        Client -> User: Prompt User to Change Username
+    end
+end
+
+Client -> MongoDB: Create Account
+MongoDB -> Client: Account Created Response
+Client -> Sendgrid: Send Email with Code
+Sendgrid -> Client: 200 Response
+Client -> User: 'Check your Email' Page
+User -> User: Collects code from email
+User -> Client: Inputs code from email
+Client -> User: Prompts user to login
+
+loop Until Correct Login Credentials
+
+    User -> Client: Enters Account Credentials
+    Client -> MongoDB: Login
+
+    alt Successful Login
+        MongoDB -> Client: Valid Login Response
+
+    else Incorrect Login
+        MongoDB -> Client: Invalid Login Response
+        Client -> User: Prompt User to Correct Credentials
+    end
+end
+
+Client -> User: Display Logged in screen
+
+@enduml
+
+@startuml Mobile Actions
+
+Actor User
+Participant Client
+Database MongoDB
+
+Client -> User: Display Logged in screen
+loop User Actions
+    opt Set Goal
+        User -> Client: Navigate to goals
+        Client -> User: Displays goals view
+        User -> Client: Sets goal
+        Client -> MongoDB: Logs goal change in mongodb
+        MongoDB -> Client: Goal change response
+        Client -> User: Displays Updated Goal
+    end
+
+    opt View Statistics
+        User -> Client: Navigates to statistics
+        Client -> MongoDB: Gets User Statistics
+        MongoDB -> Client: Returns User Statistics
+        Client -> User: Displays Statistics as graphs
+    end
+
+    opt Purchase Item
+        User -> Client: Navigates to shop
+        Client -> User: Displays shop
+        User -> Client: Selects item for purchase
+        Client -> MongoDB: Adds purchased item to inventory
+        MongoDB -> Client: Returns updated inventory
+        Client -> User: Updates shop to reflect purchased item
+    end
+end
+
+
+
+
+@enduml
