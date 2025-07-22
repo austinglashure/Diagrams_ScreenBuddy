@@ -73,13 +73,24 @@ loop User Actions
         Client -> User: Displays Statistics as graphs
     end
 
-    opt Purchase Item
+    opt Purchase Color
         User -> Client: Navigates to shop
         Client -> User: Displays shop
         User -> Client: Selects item for purchase
         Client -> MongoDB: Adds purchased item to inventory
         MongoDB -> Client: Returns updated inventory
         Client -> User: Updates shop to reflect purchased item
+    end
+
+    opt Equip Color
+        User -> Client: Navigate to Inventory
+        Client -> MongoDB: Get list of items
+        MongoDB -> Client: Return items list
+        Client -> User: Display Inventory
+        User -> Client: Select Color to Equip
+        Client -> MongoDB: Log Change of Equipped Color
+        MongoDB -> Client: Return Buddy with Updated Color
+        Client -> User: Display Updated Buddy
     end
 end
 
