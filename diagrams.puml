@@ -83,7 +83,71 @@ loop User Actions
     end
 end
 
+@enduml
 
+@startuml Use Case Diagram
+' overall layout
+left to right direction
 
+' Actors
+actor "User" as User
+actor "New User" as NewUser
+actor "Existing User" as ExistingUser
+
+ExistingUser -> User
+NewUser -> User
+
+' External systems
+component "SendGrid" as SendGrid
+database  "MongoDB"  as MongoDB
+
+' System boundary
+rectangle "ScreenBuddy" {
+
+    ' Use‐Cases (with colors roughly matching your ovals)
+    usecase UC_Create as "Create an account" #LightSlateGray
+    usecase UC_Username as "Username Taken" #LightCoral
+    usecase UC_SendEmail as "Send Account\nVerification Email" #DarkSeaGreen
+
+    usecase UC_Login as "Login" #LightSlateGray
+    usecase UC_Invalid as "Invalid Credentials" #LightCoral
+
+    usecase UC_SetGoal as "Set Screentime Goal" #Plum
+    usecase UC_SpendCoins as "Spend Coins on Buddy" #Plum
+    usecase UC_EquipColor as "Equip Color" #Plum
+    usecase UC_WatchAd as "Watch Ad" #Plum
+    usecase UC_ViewDash as "View Statistics\nDashboard" #Plum
+
+    usecase UC_Monitor as "Monitor Phone Usage" #DarkSeaGreen
+    usecase UC_FetchData as "Fetch User Data" #DarkSeaGreen
+  
+    ' account creation
+    NewUser --> UC_Create
+    UC_Create <|-- UC_Username : <<extends>>
+    UC_Create --> UC_SendEmail : <<includes>>
+
+    ' login and post‐login actions
+    ExistingUser --> UC_Login
+    UC_Login <|-- UC_Invalid : <<extends>>
+
+    UC_Login --> UC_SetGoal
+    UC_Login --> UC_SpendCoins
+    UC_Login --> UC_EquipColor
+    UC_Login --> UC_WatchAd
+    UC_Login --> UC_ViewDash
+
+    ' feature → backend
+    UC_SetGoal --> UC_Monitor
+    UC_ViewDash --> UC_FetchData
+}
+
+' arrows to externals
+UC_Create --> MongoDB
+UC_EquipColor --> MongoDB
+UC_SpendCoins --> MongoDB
+UC_SendEmail --> SendGrid
+UC_Monitor --> MongoDB
+UC_FetchData --> MongoDB
 
 @enduml
+
